@@ -19,7 +19,7 @@ MILVUS_PORT = settings.MILVUS_PORT
 # 爬虫流水线专用集合（与 retriever.py 的 intel_rag 不同，两者 schema 不一样）
 COLLECTION_NAME = "hacker_news"
 
-VECTOR_DIM = 768
+VECTOR_DIM = 1024
 
 
 class MilvusManager:

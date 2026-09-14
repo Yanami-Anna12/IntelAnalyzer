@@ -132,7 +132,7 @@ def _init_collection():
     schema.add_field("id", DataType.INT64, is_primary=True)
     schema.add_field("text", DataType.VARCHAR, max_length=65535)
     schema.add_field("source", DataType.VARCHAR, max_length=512)
-    schema.add_field("dense_vector", DataType.FLOAT_VECTOR, dim=768)  # bge-base-zh 768 维
+    schema.add_field("dense_vector", DataType.FLOAT_VECTOR, dim=1024)  # bge-m3 1024 维
     index = c.prepare_index_params()
     index.add_index(field_name="dense_vector", index_type="AUTOINDEX", metric_type="COSINE")
     c.create_collection(config.MILVUS_COLLECTION, schema=schema, index_params=index)
@@ -174,6 +174,8 @@ def search(query, top_k=None):
         data=[q["dense"]],
         limit=config.HYBRID_TOP_K,
         output_fields=["text", "source"],
+        # 集合里同时存在 dense_vector 与 sparse_vector，必须显式指定检索字段
+        anns_field="dense_vector",
         search_params={"metric_type": "COSINE"},
     )
     if not results or not results[0]:

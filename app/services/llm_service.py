@@ -7,7 +7,7 @@ SYSTEM_PROMPT = "你是一个企业智能情报分析助手，请用中文简洁
 
 
 def _create_model(model_name: str | None = None) -> ChatOpenAI:
-    """创建大模型客户端（LangChain 封装版，和你老师教的一致）"""
+    """创建大模型客户端"""
     return ChatOpenAI(
         model=model_name or settings.OPENAI_MODEL,
         openai_api_key=settings.OPENAI_API_KEY,

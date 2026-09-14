@@ -1,3 +1,5 @@
+import math
+
 from sentence_transformers import SentenceTransformer
 
 from app.config.settings import settings
@@ -94,10 +96,25 @@ def embed_chunks(
 
     result = []
 
+    skipped = 0
+
     for chunk, embedding in zip(
         chunks,
         embeddings,
     ):
+
+        # 过滤含 NaN/Inf 的非法向量，避免 Milvus 写入失败
+        if not all(math.isfinite(x) for x in embedding):
+
+            skipped += 1
+
+            print(
+                "跳过非法向量（含 NaN/Inf）："
+                f"{chunk.get('title', '')[:50]} "
+                f"chunk={chunk.get('chunk_index')}"
+            )
+
+            continue
 
         item = chunk.copy()
 
@@ -109,7 +126,10 @@ def embed_chunks(
     print("=" * 60)
     print("Embedding 完成")
     print(f"Chunk 数量：{len(result)}")
-    print(f"向量维度：{len(result[0]['embedding'])}")
+    if skipped:
+        print(f"已过滤非法向量：{skipped} 个")
+    if result:
+        print(f"向量维度：{len(result[0]['embedding'])}")
     print("=" * 60)
 
     return result

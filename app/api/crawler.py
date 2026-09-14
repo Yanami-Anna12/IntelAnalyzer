@@ -118,3 +118,18 @@ def crawler_statistics():
         return success({"news_count": total, "hacker_news_count": hn_count})
     except Exception as exc:  # noqa: BLE001
         return fail(Code.CRAWLER_ERROR, f"统计失败: {exc}")
+
+
+@router.get("/crawler/news")
+def crawler_news(keyword: str = "", limit: int = 20):
+    """查询已入库的原始情报数据（供前端列表展示，支持标题/正文关键词过滤）"""
+    try:
+        from app.database import repo
+
+        rows = repo.query_news(
+            keyword=keyword or None,
+            limit=max(1, min(int(limit), 200)),
+        )
+        return success(rows)
+    except Exception as exc:  # noqa: BLE001
+        return fail(Code.INTERNAL_ERROR, f"新闻查询失败: {exc}")
