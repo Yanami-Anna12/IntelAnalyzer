@@ -23,3 +23,5 @@ venv/
 
 # ===== 大数据文件（模型、原始数据）=====
 data/models/
+.env
+.env.example
